@@ -1,0 +1,14 @@
+{
+  "format_version": 1,
+  "code": "2020_N_293_00_0099",
+  "competition_id": 293,
+  "bootstrap": true,
+  "label": "TEST NATIONAL COLOC",
+  "year": 2020,
+  "type": "AUTEUR",
+  "support": "IP",
+  "mode": "DIRECT",
+  "photos_count": 9,
+  "has_thumbs": true,
+  "has_exports": true
+}

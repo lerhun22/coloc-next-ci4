@@ -1,0 +1,1 @@
+INSERT INTO `competitions` VALUES (293,99,1,NULL,2020,'Test National COLOC','2020-03-08',30,5,25,0,0,5,20,3,6,0,0);
