@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Domains\Bootstrap\Services;
+namespace App\Domain\Bootstrap\Services;
 
-use App\Domains\Competition\Services\ActiveCompetitionService;
-use App\Domains\Competition\Services\CompetitionFilesystemInitializer;
-use App\Domains\Competition\Services\CompetitionPackageLoader;
-use App\Domains\Bootstrap\Services\SchemaLoader;
+use App\Domain\Competition\Services\ActiveCompetitionService;
+use App\Domain\Competition\Services\CompetitionFilesystemInitializer;
+use App\Domain\Competition\Services\CompetitionPackageLoader;
+use App\Domain\Bootstrap\Services\SchemaLoader;
 
 class BootstrapService
 {
@@ -20,7 +20,7 @@ class BootstrapService
         | 1. Load schema
         |--------------------------------------------------------------------------
         */
-        //dd(class_exists(\App\Domains\Bootstrap\Services\SchemaLoader::class));
+        //dd(class_exists(\App\Domain\Bootstrap\Services\SchemaLoader::class));
 
         $schemaLoader = new SchemaLoader();
 

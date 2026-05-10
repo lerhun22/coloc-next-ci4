@@ -1,18 +1,6 @@
 <?php
 
-/*
-
-BootstrapController
-        ↓
-BootstrapService
-        ↓
-CompetitionPackageLoader
-        ↓
-SQL files
-
-*/
-
-namespace App\Domains\Competition\Services;
+namespace App\Domain\Competition\Services;
 
 class CompetitionPackageLoader
 {

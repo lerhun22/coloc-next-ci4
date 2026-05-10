@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domains\Slideshow\Services;
+namespace App\Domain\Slideshow\Services;
 
-use App\Domains\Slideshow\DTO\SlideImageDTO;
+use App\Domain\Slideshow\DTO\SlideImageDTO;
 use App\Services\Runtime\RuntimeService;
 use App\Services\Paths\PathsService;
 
@@ -38,8 +38,6 @@ final class SlideshowService
     public function getSlide(int $index): ?SlideImageDTO
     {
         $competition = $this->runtime->getCompetition();
-
-        //dd($competition);
 
         if ($competition === null) {
             return null;

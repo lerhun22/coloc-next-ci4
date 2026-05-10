@@ -20,7 +20,7 @@ Runtime assets
 */
 
 
-namespace App\Domains\Competition\Services;
+namespace App\Domain\Competition\Services;
 
 class CompetitionFilesystemInitializer
 {

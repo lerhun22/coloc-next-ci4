@@ -5,6 +5,7 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
+
 $routes->get('/', 'HomeController::index');
 
 $routes->get('/test-db', 'TestDb::index');
@@ -16,11 +17,11 @@ $routes->get(
     'CompetitionRuntimeController::load/$1'
 );
 
-
-
 $routes->get('/slideshow', 'SlideshowController::index');
 $routes->get('/slideshow/(:num)', 'SlideshowController::show/$1');
 $routes->get(
     '/runtime/image/(:segment)/(:any)',
     'RuntimeImageController::show/$1/$2'
 );
+
+$routes->get('/', '\App\Domain\Competition\Controllers\HomeController::index');

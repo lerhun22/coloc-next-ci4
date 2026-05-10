@@ -17,7 +17,7 @@ app/
 
 namespace App\Controllers;
 
-use App\Domains\Bootstrap\Services\BootstrapService;
+use App\Domain\Bootstrap\Services\BootstrapService;
 
 class Bootstrap extends BaseController
 {

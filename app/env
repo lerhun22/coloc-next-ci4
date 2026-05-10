@@ -1,0 +1,11 @@
+CI_ENVIRONMENT=development
+
+app.baseURL='http://localhost:8080/'
+
+database.default.hostname=127.0.0.1
+database.default.database=coloc-next
+database.default.username=root
+database.default.password=root
+database.default.DBDriver=MySQLi
+database.default.DBPrefix=
+database.default.port=8889

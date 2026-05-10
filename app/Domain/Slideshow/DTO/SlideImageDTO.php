@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domains\Slideshow\DTO;
+namespace App\Domain\Slideshow\DTO;
 
 /**
  * ============================================================================

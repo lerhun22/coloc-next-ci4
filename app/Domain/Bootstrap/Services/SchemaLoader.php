@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domains\Bootstrap\Services;
+namespace App\Domain\Bootstrap\Services;
 
 class SchemaLoader
 {

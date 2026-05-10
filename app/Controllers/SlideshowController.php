@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Domains\Slideshow\Services\SlideshowService;
+use App\Domain\Slideshow\Services\SlideshowService;
 use App\Services\Runtime\RuntimeService;
 use App\Services\Paths\PathsService;
 
@@ -19,16 +19,16 @@ final class SlideshowController extends BaseController
 
     public function show(int $index = 0)
     {
+
         $runtime = new RuntimeService();
 
         $runtime->setCompetition(
-            new \App\Domains\Competition\DTO\CompetitionDTO(
-                id: 1,
-                code: '2020_N_293_00_0099',
-                name: 'Compétition test',
+            new \App\Domain\Competition\DTO\CompetitionDTO(
+                1,
+                '2020_N_293_00_0099',
+                'Compétition test'
             )
         );
-
         $service = new SlideshowService(
             $runtime,
             new PathsService(),
