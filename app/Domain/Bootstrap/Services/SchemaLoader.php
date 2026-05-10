@@ -14,11 +14,7 @@ class SchemaLoader
     public function load(string $schemaPath): void
     {
 
-        // dd($schemaPath);
-
         $files = glob($schemaPath . '/*.sql');
-
-        //dd($files);
 
         foreach ($files as $file) {
 

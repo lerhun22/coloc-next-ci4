@@ -20,7 +20,6 @@ class BootstrapService
         | 1. Load schema
         |--------------------------------------------------------------------------
         */
-        //dd(class_exists(\App\Domain\Bootstrap\Services\SchemaLoader::class));
 
         $schemaLoader = new SchemaLoader();
 

@@ -25,3 +25,8 @@ $routes->get(
 );
 
 $routes->get('/', '\App\Domain\Competition\Controllers\HomeController::index');
+
+$routes->get(
+    'runtime/test',
+    'RuntimeController::test'
+);
