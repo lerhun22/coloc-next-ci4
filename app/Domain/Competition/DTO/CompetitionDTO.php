@@ -15,18 +15,21 @@ class CompetitionDTO
     public string $code;
 
     /**
-     * Nom métier affichable.
+     * Titre métier affichable.
      *
      * Exemple :
-     * "National Nature UR22 2020"
+     * National Nature UR22 2020
      *
-     * Provient de :
+     * Source :
      * competition_meta.source_label
      */
     public string $title;
 
     /**
      * Chemin racine de la compétition.
+     *
+     * Exemple :
+     * writable/competitions/2020_N_293_00_0099
      */
     public string $path;
 

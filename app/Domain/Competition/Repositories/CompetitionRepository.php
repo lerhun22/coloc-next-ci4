@@ -5,9 +5,24 @@ declare(strict_types=1);
 namespace App\Domain\Competition\Repositories;
 
 use App\Domain\Competition\DTO\CompetitionDTO;
+use App\Models\CompetitionMetaModel;
 
-final class CompetitionRepository
+class CompetitionRepository
 {
+    /**
+     * Model metadata compétition.
+     */
+    private CompetitionMetaModel $metaModel;
+
+    public function __construct()
+    {
+        $this->metaModel = new CompetitionMetaModel();
+
+        log_message(
+            'debug',
+            '[CompetitionRepository] Repository initialized'
+        );
+    }
 
     /**
      * Retourne une compétition par son code.
@@ -18,7 +33,7 @@ final class CompetitionRepository
 
         /*
         |--------------------------------------------------------------------------
-        | Source compétition
+        | Competition path
         |--------------------------------------------------------------------------
         */
 
@@ -28,7 +43,7 @@ final class CompetitionRepository
 
         /*
         |--------------------------------------------------------------------------
-        | Vérification existence
+        | Check directory existence
         |--------------------------------------------------------------------------
         */
 
@@ -36,9 +51,10 @@ final class CompetitionRepository
 
             log_message(
                 'error',
-                '[CompetitionRepository] Competition directory not found: {code}',
+                '[CompetitionRepository] Competition directory not found',
                 [
                     'code' => $competitionCode,
+                    'path' => $competitionPath,
                 ]
             );
 
@@ -47,14 +63,28 @@ final class CompetitionRepository
 
         /*
         |--------------------------------------------------------------------------
-        | Construction DTO
+        | Load metadata
         |--------------------------------------------------------------------------
         */
 
-        $title = $competitionCode;
+        $meta = $this->metaModel
+            ->where('code', $competitionCode)
+            ->first();
 
+        /*
+        |--------------------------------------------------------------------------
+        | Resolve title
+        |--------------------------------------------------------------------------
+        */
 
-        dd($title);
+        $title = $meta['source_label']
+            ?? $competitionCode;
+
+        /*
+        |--------------------------------------------------------------------------
+        | DTO construction
+        |--------------------------------------------------------------------------
+        */
 
         $competition = new CompetitionDTO(
             $competitionCode,
@@ -62,69 +92,22 @@ final class CompetitionRepository
             $competitionPath
         );
 
+        /*
+        |--------------------------------------------------------------------------
+        | Logging
+        |--------------------------------------------------------------------------
+        */
+
         log_message(
             'debug',
-            '[CompetitionRepository] Competition DTO created: {code}',
+            '[CompetitionRepository] Competition hydrated',
             [
-                'code' => $competition->code,
+                'code'  => $competition->code,
+                'title' => $competition->title,
+                'path'  => $competition->path,
             ]
         );
 
         return $competition;
-    }
-
-
-
-
-
-    public function findById(
-        int $id
-    ): ?CompetitionDTO {
-
-        $db = db_connect();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Competition
-        |--------------------------------------------------------------------------
-        */
-
-        $competition = $db
-            ->table('competitions')
-            ->where('id', $id)
-            ->get()
-            ->getRowArray();
-
-        if (! $competition) {
-            return null;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Competition meta
-        |--------------------------------------------------------------------------
-        */
-
-        $meta = $db
-            ->table('competition_meta')
-            ->where('competition_id', $id)
-            ->get()
-            ->getRowArray();
-
-        if (! $meta) {
-            return null;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Runtime DTO
-        |--------------------------------------------------------------------------
-        */
-
-        return new CompetitionDTO(
-            (int) $competition['id'],
-            (string) $meta['code'],
-            (string) $competition['nom'],
-        );
     }
 }
