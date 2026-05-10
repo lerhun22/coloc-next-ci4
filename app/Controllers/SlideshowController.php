@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Domain\Slideshow\Services\SlideshowService;
-use App\Services\Runtime\RuntimeService;
+use App\Domain\Runtime\Services\RuntimeService;
 use App\Services\Paths\PathsService;
 
 

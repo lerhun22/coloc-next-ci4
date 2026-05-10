@@ -62,6 +62,7 @@ CREATE TABLE `competition_meta` (
   `participants_type` enum('club','author') COLLATE utf8mb4_unicode_ci DEFAULT 'club',
   `is_official` tinyint(1) DEFAULT '1',
   `source_label` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `code` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `normalized_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_competition` (`competition_id`),

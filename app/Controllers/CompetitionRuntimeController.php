@@ -4,98 +4,35 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Domain\Competition\Repositories\CompetitionRepository;
-use App\Domain\Competition\Services\ActiveCompetitionService;
-use App\Domain\Import\Services\ImportLoaderService;
-use App\Services\Paths\PathsService;
+use App\Domain\Runtime\Services\ActivationCompetitionService;
+use App\Domain\Runtime\Services\RuntimeService;
 
-/**
- * ============================================================================
- * COLOC NEXT
- * ============================================================================
- * Objet : Activation runtime d'une compétition
- * ============================================================================
- */
-
-final class CompetitionRuntimeController extends BaseController
+class RuntimeController extends BaseController
 {
-    /**
-     * -------------------------------------------------------------------------
-     * Charge une compétition dans le runtime moderne
-     * -------------------------------------------------------------------------
-     */
-    public function load(int $id)
+    public function test(): string
     {
-        /*
-        |--------------------------------------------------------------------------
-        | Repository métier officiel
-        |--------------------------------------------------------------------------
-        */
+        $activation = service(
+            ActivationCompetitionService::class
+        );
 
-        $repository =
-            new CompetitionRepository();
+        $runtime = service(
+            RuntimeService::class
+        );
 
-        $competition =
-            $repository->findById($id);
+        $activation->activate(
+            '2020_N_293_00_0099'
+        );
 
-        /*
-        |--------------------------------------------------------------------------
-        | Sécurité
-        |--------------------------------------------------------------------------
-        */
+        $competition = $runtime
+            ->getActiveCompetition();
 
-        if (! $competition) {
-
-            return $this->response
-                ->setStatusCode(404)
-                ->setJSON([
-                    'status'  => 'error',
-                    'message' => 'Compétition introuvable',
-                ]);
+        if ($competition === null) {
+            return 'No active competition';
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Active runtime competition
-        |--------------------------------------------------------------------------
-        */
-
-        $activeCompetition =
-            new ActiveCompetitionService();
-
-        $activeCompetition->set(
-            $competition->id
+        return sprintf(
+            'Active competition: %s',
+            $competition->title
         );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Runtime loader
-        |--------------------------------------------------------------------------
-        */
-
-        $loader = new ImportLoaderService(
-            new PathsService()
-        );
-
-        $result = $loader->load(
-            $competition
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Response
-        |--------------------------------------------------------------------------
-        */
-
-        return $this->response
-            ->setJSON([
-                'status'      => 'success',
-                'competition' => [
-                    'id'   => $competition->id,
-                    'code' => $competition->code,
-                    'name' => $competition->name,
-                ],
-                'runtime' => $result,
-            ]);
     }
 }
