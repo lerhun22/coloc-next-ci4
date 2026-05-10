@@ -100,12 +100,11 @@ class CompetitionRepository
 
         log_message(
             'debug',
-            '[CompetitionRepository] Competition hydrated',
-            [
-                'code'  => $competition->code,
-                'title' => $competition->title,
-                'path'  => $competition->path,
-            ]
+            sprintf(
+                '[CompetitionRepository] Competition hydrated | code=%s | title=%s',
+                $competition->code,
+                $competition->title
+            )
         );
 
         return $competition;

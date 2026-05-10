@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace App\Domain\Competition\Runtime;
 
-use App\Config\CompetitionRegistry;
 use App\Domain\Competition\DTO\CompetitionDTO;
 use App\Domain\Competition\Repositories\CompetitionRepository;
 
 class RuntimeService
 {
     /**
+     * Session key utilisée pour la compétition active.
+     */
+    private const SESSION_ACTIVE_COMPETITION =
+    'activeCompetition';
+
+    /**
      * Repository métier compétition.
      */
     private CompetitionRepository $repository;
-
-    /**
-     * Runtime session key.
-     */
-    private const SESSION_ACTIVE_COMPETITION = 'activeCompetition';
 
     public function __construct()
     {
@@ -35,14 +35,18 @@ class RuntimeService
      */
     public function getActiveCompetitionCode(): ?string
     {
-        return session(self::SESSION_ACTIVE_COMPETITION);
+        return session(
+            self::SESSION_ACTIVE_COMPETITION
+        );
     }
 
     /**
-     * Définit la compétition active.
+     * Active une compétition dans la session runtime.
      */
-    public function activateCompetition(string $competitionCode): void
-    {
+    public function activateCompetition(
+        string $competitionCode
+    ): void {
+
         session()->set(
             self::SESSION_ACTIVE_COMPETITION,
             $competitionCode
@@ -64,6 +68,12 @@ class RuntimeService
     {
         $code = $this->getActiveCompetitionCode();
 
+        /*
+        |--------------------------------------------------------------------------
+        | No active competition
+        |--------------------------------------------------------------------------
+        */
+
         if ($code === null) {
 
             log_message(
@@ -74,13 +84,26 @@ class RuntimeService
             return null;
         }
 
-        $competition = $this->repository->findByCode($code);
+        /*
+        |--------------------------------------------------------------------------
+        | Load competition
+        |--------------------------------------------------------------------------
+        */
+
+        $competition = $this->repository
+            ->findByCode($code);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Competition not found
+        |--------------------------------------------------------------------------
+        */
 
         if ($competition === null) {
 
             log_message(
                 'error',
-                '[RuntimeService] Competition not found: {code}',
+                '[RuntimeService] Competition not found',
                 [
                     'code' => $code,
                 ]
@@ -89,22 +112,30 @@ class RuntimeService
             return null;
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Runtime hydrated
+        |--------------------------------------------------------------------------
+        */
+
         log_message(
             'debug',
-            '[RuntimeService] Active competition loaded: {code}',
-            [
-                'code' => $competition->code,
-            ]
+            sprintf(
+                '[RuntimeService] Active competition loaded | code=%s | title=%s',
+                $competition->code,
+                $competition->title
+            )
         );
 
         return $competition;
     }
 
     /**
-     * Vérifie si une compétition est active.
+     * Vérifie si une compétition active existe.
      */
     public function hasActiveCompetition(): bool
     {
-        return $this->getActiveCompetitionCode() !== null;
+        return $this->getActiveCompetitionCode()
+            !== null;
     }
 }
