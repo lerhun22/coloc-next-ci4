@@ -5,45 +5,115 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Domain\Slideshow\Services\SlideshowService;
-use App\Domain\Runtime\Services\RuntimeService;
-use App\Services\Paths\PathsService;
-
 
 final class SlideshowController extends BaseController
 {
-    public function index()
+    public function index(): mixed
     {
+        log_message(
+            'debug',
+            '[SlideshowController] Slideshow index requested'
+        );
 
         return redirect()->to('/slideshow/0');
     }
 
-    public function show(int $index = 0)
-    {
+    public function show(
+        int $index = 0
+    ): string {
 
-        $runtime = new RuntimeService();
-
-        $runtime->setCompetition(
-            new \App\Domain\Competition\DTO\CompetitionDTO(
-                1,
-                '2020_N_293_00_0099',
-                'Compétition test'
-            )
-        );
-        $service = new SlideshowService(
-            $runtime,
-            new PathsService(),
+        log_message(
+            'debug',
+            '[SlideshowController] Slide requested'
+                . ' | index=' . $index
         );
 
-        $slide = $service->getSlide($index);
+        /*
+        |--------------------------------------------------------------------------
+        | Runtime courant
+        |--------------------------------------------------------------------------
+        */
 
-        if ($slide === null) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        $runtimeService = service('runtime');
+
+        $runtime = $runtimeService->current();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Vérification runtime actif
+        |--------------------------------------------------------------------------
+        */
+
+        if (! $runtime->active) {
+
+            log_message(
+                'warning',
+                '[SlideshowController] No active competition'
+            );
+
+            throw \CodeIgniter\Exceptions\PageNotFoundException
+                ::forPageNotFound();
         }
 
-        return view('slideshow/show', [
-            'slide' => $slide,
-            'index' => $index,
-            'count' => $service->count(),
-        ]);
+        /*
+        |--------------------------------------------------------------------------
+        | Slideshow service
+        |--------------------------------------------------------------------------
+        */
+
+        $slideshowService = new SlideshowService();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Chargement slides
+        |--------------------------------------------------------------------------
+        */
+
+        $slides = $slideshowService->load(
+            $runtime
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Vérification slide demandée
+        |--------------------------------------------------------------------------
+        */
+
+        if (! isset($slides[$index])) {
+
+            log_message(
+                'warning',
+                '[SlideshowController] Slide not found'
+                    . ' | index=' . $index
+            );
+
+            throw \CodeIgniter\Exceptions\PageNotFoundException
+                ::forPageNotFound();
+        }
+
+        $slide = $slides[$index];
+
+        /*
+        |--------------------------------------------------------------------------
+        | Slide ready
+        |--------------------------------------------------------------------------
+        */
+
+        log_message(
+            'debug',
+            '[SlideshowController] Slide ready'
+                . ' | index=' . $index
+                . ' | filename=' . $slide['filename']
+        );
+
+        return view(
+            'slideshow/show',
+            [
+                'slide' => $slide,
+                'index' => $index,
+                'count' => count($slides),
+                'runtime' => $runtime,
+            ]
+        );
     }
 }

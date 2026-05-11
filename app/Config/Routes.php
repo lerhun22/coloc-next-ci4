@@ -17,16 +17,22 @@ $routes->get(
     'CompetitionRuntimeController::load/$1'
 );
 
-$routes->get('/slideshow', 'SlideshowController::index');
-$routes->get('/slideshow/(:num)', 'SlideshowController::show/$1');
-$routes->get(
-    '/runtime/image/(:segment)/(:any)',
-    'RuntimeImageController::show/$1/$2'
-);
-
-$routes->get('/', '\App\Domain\Competition\Controllers\HomeController::index');
-
 $routes->get(
     'runtime/test',
-    'RuntimeController::test'
+    'CompetitionRuntimeController::test'
+);
+
+$routes->get(
+    'slideshow',
+    'SlideshowController::index'
+);
+
+$routes->get(
+    'slideshow/(:num)',
+    'SlideshowController::show/$1'
+);
+
+$routes->get(
+    'runtime/image/(:segment)/(:any)',
+    'RuntimeImageController::show/$1/$2'
 );

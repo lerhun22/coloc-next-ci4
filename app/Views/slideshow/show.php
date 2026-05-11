@@ -30,13 +30,12 @@
 
     <div>
         <img
-            src="<?= esc($slide->imageUrl) ?>"
-            alt="<?= esc($slide->title) ?>"
+            src="<?= esc($slide['url']) ?>"
             style="max-width:900px; max-height:700px;">
     </div>
 
     <p>
-        <?= esc($slide->title) ?>
+        <?= esc($slide['filename']) ?>
     </p>
 
 </body>

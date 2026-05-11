@@ -4,121 +4,144 @@ declare(strict_types=1);
 
 namespace App\Domain\Slideshow\Services;
 
-use App\Domain\Slideshow\DTO\SlideImageDTO;
-use App\Domain\Runtime\Services\RuntimeService;
-use App\Services\Paths\PathsService;
-
-/**
- * ============================================================================
- * COLOC NEXT
- * ============================================================================
- * Date   : 2026-05-08
- * Auteur : COLOC NEXT
- * Objet  : Service minimal de navigation slideshow
- * ============================================================================
- *
- * Responsabilités :
- * - récupérer la compétition active
- * - scanner les images runtime
- * - construire les DTO slideshow
- * - fournir une navigation simple par index
- * ============================================================================
- */
+use App\Domain\Competition\Runtime\RuntimeDTO;
 
 final class SlideshowService
 {
-    public function __construct(
-        private readonly RuntimeService $runtime,
-        private readonly PathsService $paths,
-    ) {}
-
     /**
-     * Retourne une slide par index.
+     * Charge les slides du runtime actif.
+     *
+     * @return array<int, array<string, mixed>>
      */
-    public function getSlide(int $index): ?SlideImageDTO
-    {
-        $competition = $this->runtime->getCompetition();
+    public function load(
+        RuntimeDTO $runtime
+    ): array {
 
-        if ($competition === null) {
-            return null;
-        }
-
-        $images = $this->loadImages($competition->code);
-
-        if (! isset($images[$index])) {
-            return null;
-        }
-
-        $file = $images[$index];
-
-        return new SlideImageDTO(
-            index: $index,
-            filename: $file,
-            title: pathinfo($file, PATHINFO_FILENAME),
-            score: null,
-            imageUrl: $this->paths->imageUrl($competition->code, $file),
+        log_message(
+            'debug',
+            '[SlideshowService] Loading slideshow'
         );
-    }
 
-    /**
-     * Nombre total d'images.
-     */
-    public function count(): int
-    {
-        $competition = $this->runtime->getCompetition();
+        /*
+        |--------------------------------------------------------------------------
+        | Vérification runtime actif
+        |--------------------------------------------------------------------------
+        */
 
-        if ($competition === null) {
-            return 0;
-        }
+        if (! $runtime->active) {
 
-        return count($this->loadImages($competition->code));
-    }
+            log_message(
+                'warning',
+                '[SlideshowService] No active runtime'
+            );
 
-    /**
-     * Charge les images depuis le runtime filesystem.
-     */
-    private function loadImages(string $package): array
-    {
-        $directory = $this->paths->images($package);
-
-        log_message('debug', "Chargement des images pour le package: {$package}");
-        log_message('debug', "Répertoire: {$directory}");
-        $a = is_dir($directory);
-        log_message('debug', "Le répertoire existe-t-il? " . ($a ? 'Oui' : 'Non'));
-        if (! is_dir($directory)) {
             return [];
         }
 
-        $files = scandir($directory);
+        /*
+        |--------------------------------------------------------------------------
+        | Vérification path photos
+        |--------------------------------------------------------------------------
+        */
 
-        log_message('debug', "Répertoire: {$directory}, fichiers trouvés: " . count($files));
+        $photosPath = $runtime->paths['photos'] ?? null;
+
+        if ($photosPath === null) {
+
+            log_message(
+                'error',
+                '[SlideshowService] Missing photos path'
+                    . ' | code=' . $runtime->competition->code
+            );
+
+            return [];
+        }
+
+        log_message(
+            'debug',
+            '[SlideshowService] Photos path resolved'
+                . ' | path=' . $photosPath
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Vérification existence dossier
+        |--------------------------------------------------------------------------
+        */
+
+        if (! is_dir($photosPath)) {
+
+            log_message(
+                'error',
+                '[SlideshowService] Photos directory missing'
+                    . ' | path=' . $photosPath
+            );
+
+            return [];
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Scan photos
+        |--------------------------------------------------------------------------
+        */
+
+        $files = glob(
+            $photosPath . '*.{jpg,jpeg,JPG,JPEG,png,PNG}',
+            GLOB_BRACE
+        );
 
         if ($files === false) {
+
+            log_message(
+                'error',
+                '[SlideshowService] Photos scan failed'
+                    . ' | path=' . $photosPath
+            );
+
             return [];
         }
 
-        $images = [];
+        log_message(
+            'debug',
+            '[SlideshowService] Photos directory scanned'
+                . ' | files=' . count($files)
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Construction slides
+        |--------------------------------------------------------------------------
+        */
+
+        $slides = [];
 
         foreach ($files as $file) {
 
-            if (in_array($file, ['.', '..'], true)) {
-                continue;
-            }
+            $slides[] = [
+                'filename' => basename($file),
+                'filepath' => $file,
 
-            $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-
-            if (! in_array($extension, ['jpg', 'jpeg', 'png', 'webp'], true)) {
-                continue;
-            }
-
-            $images[] = $file;
+                'url' => '/runtime/image/'
+                    . $runtime->competition->code
+                    . '/'
+                    . basename($file),
+            ];
         }
 
-        sort($images);
+        /*
+        |--------------------------------------------------------------------------
+        | Slideshow prêt
+        |--------------------------------------------------------------------------
+        */
 
+        log_message(
+            'debug',
+            '[SlideshowService] Slideshow ready'
+                . ' | competition=' . $runtime->competition->code
+                . ' | slides=' . count($slides)
+        );
 
-
-
-        return array_values($images);
+        return $slides;
     }
 }

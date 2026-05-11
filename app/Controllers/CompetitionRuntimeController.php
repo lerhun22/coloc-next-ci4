@@ -4,35 +4,73 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Domain\Runtime\Services\ActivationCompetitionService;
-use App\Domain\Runtime\Services\RuntimeService;
-
-class RuntimeController extends BaseController
+final class CompetitionRuntimeController extends BaseController
 {
     public function test(): string
     {
-        $activation = service(
-            ActivationCompetitionService::class
+        log_message(
+            'debug',
+            '[RuntimeController] Runtime test started'
         );
 
-        $runtime = service(
-            RuntimeService::class
+        /*
+        |--------------------------------------------------------------------------
+        | Services runtime
+        |--------------------------------------------------------------------------
+        */
+
+        $activation = service(
+            'activationCompetition'
         );
+
+        $runtimeService = service(
+            'runtime'
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activation compétition test
+        |--------------------------------------------------------------------------
+        */
 
         $activation->activate(
             '2020_N_293_00_0099'
         );
 
-        $competition = $runtime
-            ->getActiveCompetition();
+        log_message(
+            'debug',
+            '[RuntimeController] Competition activated'
+                . ' | code=2020_N_293_00_0099'
+        );
 
-        if ($competition === null) {
+        /*
+        |--------------------------------------------------------------------------
+        | Runtime courant
+        |--------------------------------------------------------------------------
+        */
+
+        $runtime = $runtimeService->current();
+
+        if (! $runtime->active) {
+
+            log_message(
+                'warning',
+                '[RuntimeController] No active competition'
+            );
+
             return 'No active competition';
         }
 
+        log_message(
+            'debug',
+            '[RuntimeController] Active runtime resolved'
+                . ' | code=' . $runtime->competition->code
+                . ' | title=' . $runtime->competition->title
+        );
+
         return sprintf(
             'Active competition: %s',
-            $competition->title
+            $runtime->competition->title
         );
     }
 }

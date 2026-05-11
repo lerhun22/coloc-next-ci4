@@ -4,50 +4,110 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Services\Paths\PathsService;
 use CodeIgniter\Exceptions\PageNotFoundException;
-
-/**
- * ============================================================================
- * COLOC NEXT
- * ============================================================================
- * Objet : Serveur runtime des images compétition
- * ============================================================================
- */
 
 final class RuntimeImageController extends BaseController
 {
-    /**
-     * Retourne une image runtime.
-     */
     public function show(
-        string $package,
+        string $competitionCode,
         string $filename
     ) {
 
-        $paths = new PathsService();
+        log_message(
+            'debug',
+            '[RuntimeImageController] Image requested'
+                . ' | competition=' . $competitionCode
+                . ' | filename=' . $filename
+        );
 
-        $file = $paths->images($package)
-            . $filename;
+        /*
+        |--------------------------------------------------------------------------
+        | Runtime service
+        |--------------------------------------------------------------------------
+        */
 
-        if (! is_file($file)) {
-            throw PageNotFoundException::forPageNotFound();
+        $runtimeService = service('runtime');
+
+        $runtime = $runtimeService->current();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Vérification runtime actif
+        |--------------------------------------------------------------------------
+        */
+
+        if (! $runtime->active) {
+
+            log_message(
+                'warning',
+                '[RuntimeImageController] No active runtime'
+            );
+
+            throw PageNotFoundException
+                ::forPageNotFound();
         }
 
         /*
         |--------------------------------------------------------------------------
-        | MIME
+        | Construction path image
         |--------------------------------------------------------------------------
         */
 
-        $mime = mime_content_type($file);
+        $photosPath = $runtime->paths['photos'];
 
-        if ($mime === false) {
-            $mime = 'application/octet-stream';
+        $filepath = $photosPath . $filename;
+
+        log_message(
+            'debug',
+            '[RuntimeImageController] Image path resolved'
+                . ' | path=' . $filepath
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Vérification existence fichier
+        |--------------------------------------------------------------------------
+        */
+
+        if (! is_file($filepath)) {
+
+            log_message(
+                'error',
+                '[RuntimeImageController] Image missing'
+                    . ' | path=' . $filepath
+            );
+
+            throw PageNotFoundException
+                ::forPageNotFound();
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Mime type
+        |--------------------------------------------------------------------------
+        */
+
+        $mime = mime_content_type($filepath);
+
+        log_message(
+            'debug',
+            '[RuntimeImageController] Image ready'
+                . ' | mime=' . $mime
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Response image
+        |--------------------------------------------------------------------------
+        */
+
         return $this->response
-            ->setHeader('Content-Type', $mime)
-            ->setBody(file_get_contents($file));
+            ->setHeader(
+                'Content-Type',
+                $mime
+            )
+            ->setBody(
+                file_get_contents($filepath)
+            );
     }
 }
