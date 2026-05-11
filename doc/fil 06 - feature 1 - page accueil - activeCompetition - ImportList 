@@ -1,0 +1,45 @@
+Projet : COLOC
+Framework : CodeIgniter 4
+Objectif : migration progressive depuis ancien projet
+Architecture cible :
+- CI4 propre
+- spark serve
+- architecture domaine
+- services/repositories
+- installation novice-friendly
+
+Règles :
+- conserver les briques existantes
+- migration domaine par domaine
+- éviter les réécritures massives
+- documenter chaque étape
+
+CONTEXTE
+Migration du domaine Import vers nouveau CI4
+
+OBJECTIF
+* page accueil
+* compétition active
+* listes des compéttions Régionales/Nationales/
+* Migration UI existant et code/services existants
+
+CONTRAINTES
+- conserver et enrichir tables existantes
+- compatible COPAINS
+- éviter régression
+
+ÉTAT ACTUEL
+Import fonctionne dans legacy
+
+RISQUES
+Couplage session + compétition active
+
+
+RuntimeService central
+ActivationCompetitionService
+HomeController runtime-aware
+Runtime UI state
+logs structurés
+toolbar debug runtime
+fallback no active competition
+ADR Runtime
