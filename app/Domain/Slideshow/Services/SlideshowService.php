@@ -46,6 +46,26 @@ final class SlideshowService
 
         $photosPath = $runtime->paths['photos'] ?? null;
 
+        log_message(
+            'debug',
+            '[SlideshowService] Glob pattern'
+                . ' | pattern='
+                . rtrim($photosPath, '/')
+                . '/*.{jpg,jpeg,JPG,JPEG,png,PNG}'
+        );
+
+        log_message(
+            'debug',
+            '[RuntimeImageController] File exists='
+                . (file_exists($photosPath) ? 'YES' : 'NO')
+        );
+
+        log_message(
+            'debug',
+            '[RuntimeImageController] Readable='
+                . (is_readable($photosPath) ? 'YES' : 'NO')
+        );
+
         if ($photosPath === null) {
 
             log_message(
@@ -122,10 +142,10 @@ final class SlideshowService
                 'filename' => basename($file),
                 'filepath' => $file,
 
-                'url' => '/runtime/image/'
+                'url' => base_url('/runtime/image/'
                     . $runtime->competition->code
                     . '/'
-                    . basename($file),
+                    . rawurlencode(basename($file))),
             ];
         }
 

@@ -33,7 +33,10 @@ class Toolbar extends BaseConfig
      *
      * @var list<class-string>
      */
-    public array $collectors = [
+
+    public array $collectors = [];
+
+/*    public array $collectors = [
         Timers::class,
         Database::class,
         Logs::class,
@@ -43,7 +46,7 @@ class Toolbar extends BaseConfig
         Routes::class,
         Events::class,
     ];
-
+*/
     /**
      * --------------------------------------------------------------------------
      * Collect Var Data
@@ -117,7 +120,13 @@ class Toolbar extends BaseConfig
      * @var list<string>
      */
     public array $watchedExtensions = [
-        'php', 'css', 'js', 'html', 'svg', 'json', 'env',
+        'php',
+        'css',
+        'js',
+        'html',
+        'svg',
+        'json',
+        'env',
     ];
 
     /**

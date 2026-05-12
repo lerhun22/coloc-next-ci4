@@ -33,6 +33,6 @@ $routes->get(
 );
 
 $routes->get(
-    'runtime/image/(:segment)/(:any)',
+    'runtime/image/(:segment)/(:segment)',
     'RuntimeImageController::show/$1/$2'
 );

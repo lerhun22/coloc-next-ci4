@@ -1,5 +1,5 @@
 /vendor/
-/.env
+
 
 /writable/cache/*
 !/writable/cache/.gitkeep

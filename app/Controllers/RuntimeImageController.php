@@ -63,6 +63,18 @@ final class RuntimeImageController extends BaseController
                 . ' | path=' . $filepath
         );
 
+        log_message(
+            'debug',
+            '[RuntimeImageController] File exists='
+                . (file_exists($filepath) ? 'YES' : 'NO')
+        );
+
+        log_message(
+            'debug',
+            '[RuntimeImageController] Readable='
+                . (is_readable($filepath) ? 'YES' : 'NO')
+        );
+
         /*
         |--------------------------------------------------------------------------
         | Vérification existence fichier

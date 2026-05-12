@@ -53,7 +53,7 @@ class CompetitionFilesystemInitializer
         */
 
         $folders = [
-            'images',
+            'photos',
             'thumbs',
             'export',
             'csv',

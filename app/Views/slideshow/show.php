@@ -17,11 +17,11 @@
     <div style="margin-bottom:20px;">
 
         <?php if ($index > 0): ?>
-            <a href="/slideshow/<?= $index - 1 ?>">← Précédente</a>
+            <a href="<?= site_url('slideshow/' . ($index - 1)) ?>">← Précédente</a>
         <?php endif; ?>
 
         <?php if ($index < ($count - 1)): ?>
-            <a href="/slideshow/<?= $index + 1 ?>" style="margin-left:20px;">
+            <a href="<?= site_url('slideshow/' . ($index + 1)) ?>" style="margin-left:20px;">
                 Suivante →
             </a>
         <?php endif; ?>

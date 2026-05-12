@@ -8,6 +8,9 @@ class TestDb extends Controller
 {
     public function index()
     {
+
+        //dd(env('app.baseURL'), config('App')->baseURL, site_url('slideshow/8'));
+
         $db = db_connect();
 
         try {
