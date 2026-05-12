@@ -22,6 +22,10 @@ final class SlideshowService
             '[SlideshowService] Loading slideshow'
         );
 
+        $files = service('runtimePhoto')->list(
+            $runtime->competition->code
+        );
+
         /*
         |--------------------------------------------------------------------------
         | Vérification runtime actif
@@ -44,44 +48,6 @@ final class SlideshowService
         |--------------------------------------------------------------------------
         */
 
-        $photosPath = $runtime->paths['photos'] ?? null;
-
-        log_message(
-            'debug',
-            '[SlideshowService] Glob pattern'
-                . ' | pattern='
-                . rtrim($photosPath, '/')
-                . '/*.{jpg,jpeg,JPG,JPEG,png,PNG}'
-        );
-
-        log_message(
-            'debug',
-            '[RuntimeImageController] File exists='
-                . (file_exists($photosPath) ? 'YES' : 'NO')
-        );
-
-        log_message(
-            'debug',
-            '[RuntimeImageController] Readable='
-                . (is_readable($photosPath) ? 'YES' : 'NO')
-        );
-
-        if ($photosPath === null) {
-
-            log_message(
-                'error',
-                '[SlideshowService] Missing photos path'
-                    . ' | code=' . $runtime->competition->code
-            );
-
-            return [];
-        }
-
-        log_message(
-            'debug',
-            '[SlideshowService] Photos path resolved'
-                . ' | path=' . $photosPath
-        );
 
         /*
         |--------------------------------------------------------------------------
@@ -89,16 +55,6 @@ final class SlideshowService
         |--------------------------------------------------------------------------
         */
 
-        if (! is_dir($photosPath)) {
-
-            log_message(
-                'error',
-                '[SlideshowService] Photos directory missing'
-                    . ' | path=' . $photosPath
-            );
-
-            return [];
-        }
 
         /*
         |--------------------------------------------------------------------------
@@ -106,27 +62,6 @@ final class SlideshowService
         |--------------------------------------------------------------------------
         */
 
-        $files = glob(
-            $photosPath . '*.{jpg,jpeg,JPG,JPEG,png,PNG}',
-            GLOB_BRACE
-        );
-
-        if ($files === false) {
-
-            log_message(
-                'error',
-                '[SlideshowService] Photos scan failed'
-                    . ' | path=' . $photosPath
-            );
-
-            return [];
-        }
-
-        log_message(
-            'debug',
-            '[SlideshowService] Photos directory scanned'
-                . ' | files=' . count($files)
-        );
 
         /*
         |--------------------------------------------------------------------------

@@ -1,0 +1,172 @@
+BINGO 😄
+Tu viens surtout de stabiliser l’architecture runtime CI4/MAMP de COLOC NEXT.
+
+La règle à retenir pour toute la suite est simple :
+
+# Choisir UNE architecture web unique
+
+Dans ton cas actuel :
+
+MAMP sert depuis htdocs
+```
+
+et ton projet est dans :
+
+/Applications/MAMP/htdocs/coloc-next
+```
+
+Donc l’URL racine réelle du projet devient :
+
+
+http://localhost:8888/coloc-next/public/
+```
+
+C’est CETTE adresse qu’il faut retenir partout.
+
+# Configuration finale recommandée
+
+## URL officielle locale
+
+
+http://localhost:8888/coloc-next/public/
+```
+
+---
+
+# .env
+
+Dans :
+
+/Applications/MAMP/htdocs/coloc-next/.env
+```
+
+mettre :
+
+
+CI_ENVIRONMENT = development
+
+app.baseURL = http://localhost:8888/coloc-next/public/
+app.indexPage =
+```
+
+---
+
+# .htaccess
+
+Dans :
+
+/Applications/MAMP/htdocs/coloc-next/public/.htaccess
+```
+
+mettre :
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteBase /coloc-next/public/
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    RewriteRule ^(.*)$ index.php/$1 [L]
+</IfModule>
+```
+
+---
+
+# App.php
+
+Dans :
+
+app/Config/App.php
+```
+
+tu peux maintenant laisser :
+
+
+public string $baseURL = 'http://localhost:8888/';
+```
+
+car `.env` surcharge proprement.
+
+Mais personnellement je recommande de garder cohérent :
+
+
+public string $baseURL = 'http://localhost:8888/coloc-next/public/';
+```
+
+---
+
+# Règles absolues pour COLOC NEXT
+
+## 1. Jamais de chemins hardcodés
+
+❌
+
+href="/slideshow/5"
+```
+
+✅
+
+site_url('slideshow/5')
+```
+
+---
+
+## 2. Assets/images
+
+❌
+<img src="/uploads/test.jpg">
+```
+
+✅
+
+<img src="<?= base_url('uploads/test.jpg') ?>">
+```
+
+ou URL déjà construite côté service runtime.
+
+---
+
+## 3. Writable ≠ web public
+
+Très important pour ton architecture concours/jugement.
+
+Les images restent dans :
+
+writable/competitions/
+```
+
+et passent par :
+
+runtime/image/{competition}/{filename}
+```
+
+Excellent choix architectural.
+
+---
+
+# Spark serve vs MAMP
+
+## Spark serve
+
+* permissif
+* injecte automatiquement le base path
+* masque les problèmes Apache
+
+---
+
+## MAMP / Apache
+
+* révèle les vrais problèmes runtime
+* oblige :
+
+  * baseURL propre
+  * RewriteBase propre
+  * URLs relatives propres
+
+Et c’est très bien pour stabiliser COLOC NEXT.
+
+---
+
+

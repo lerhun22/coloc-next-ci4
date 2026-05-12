@@ -22,71 +22,16 @@ final class RuntimeImageController extends BaseController
 
         /*
         |--------------------------------------------------------------------------
-        | Runtime service
+        | Sécurité minimale
         |--------------------------------------------------------------------------
         */
 
-        $runtimeService = service('runtime');
-
-        $runtime = $runtimeService->current();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Vérification runtime actif
-        |--------------------------------------------------------------------------
-        */
-
-        if (! $runtime->active) {
-
-            log_message(
-                'warning',
-                '[RuntimeImageController] No active runtime'
-            );
-
-            throw PageNotFoundException
-                ::forPageNotFound();
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Construction path image
-        |--------------------------------------------------------------------------
-        */
-
-        $photosPath = $runtime->paths['photos'];
-
-        $filepath = $photosPath . $filename;
-
-        log_message(
-            'debug',
-            '[RuntimeImageController] Image path resolved'
-                . ' | path=' . $filepath
-        );
-
-        log_message(
-            'debug',
-            '[RuntimeImageController] File exists='
-                . (file_exists($filepath) ? 'YES' : 'NO')
-        );
-
-        log_message(
-            'debug',
-            '[RuntimeImageController] Readable='
-                . (is_readable($filepath) ? 'YES' : 'NO')
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Vérification existence fichier
-        |--------------------------------------------------------------------------
-        */
-
-        if (! is_file($filepath)) {
+        if (str_contains($filename, '..')) {
 
             log_message(
                 'error',
-                '[RuntimeImageController] Image missing'
-                    . ' | path=' . $filepath
+                '[RuntimeImageController] Invalid filename'
+                    . ' | filename=' . $filename
             );
 
             throw PageNotFoundException
@@ -95,17 +40,27 @@ final class RuntimeImageController extends BaseController
 
         /*
         |--------------------------------------------------------------------------
-        | Mime type
+        | Runtime image resolution
         |--------------------------------------------------------------------------
         */
 
-        $mime = mime_content_type($filepath);
-
-        log_message(
-            'debug',
-            '[RuntimeImageController] Image ready'
-                . ' | mime=' . $mime
+        $image = service('runtimeImage')->resolve(
+            $competitionCode,
+            $filename
         );
+
+        if ($image === null) {
+
+            log_message(
+                'error',
+                '[RuntimeImageController] Image not found'
+                    . ' | competition=' . $competitionCode
+                    . ' | filename=' . $filename
+            );
+
+            throw PageNotFoundException
+                ::forPageNotFound();
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -116,10 +71,14 @@ final class RuntimeImageController extends BaseController
         return $this->response
             ->setHeader(
                 'Content-Type',
-                $mime
+                $image['mime']
+            )
+            ->setHeader(
+                'Cache-Control',
+                'public, max-age=3600'
             )
             ->setBody(
-                file_get_contents($filepath)
+                file_get_contents($image['path'])
             );
     }
 }

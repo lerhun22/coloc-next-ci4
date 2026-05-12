@@ -36,3 +36,5 @@ $routes->get(
     'runtime/image/(:segment)/(:segment)',
     'RuntimeImageController::show/$1/$2'
 );
+
+$routes->get('/runtime-debug/image', 'RuntimeDebugController::image');

@@ -52,4 +52,32 @@ class Services extends BaseService
             static::runtime()
         );
     }
+
+
+
+    public static function runtimeImage(bool $getShared = true)
+    {
+        if ($getShared) {
+            return static::getSharedInstance('runtimeImage');
+        }
+
+        return new \App\Services\Runtime\RuntimeImageService(
+            new \App\Services\Paths\CompetitionPathService()
+        );
+    }
+
+
+    public static function runtimePhoto(
+        bool $getShared = true
+    ) {
+        if ($getShared) {
+            return static::getSharedInstance(
+                'runtimePhoto'
+            );
+        }
+
+        return new \App\Services\Runtime\RuntimePhotoProvider(
+            new \App\Services\Paths\CompetitionPathService()
+        );
+    }
 }

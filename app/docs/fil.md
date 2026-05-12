@@ -58,3 +58,5 @@
   * `/runtime/image/{competition}/{file}`
 * Runtime observability obligatoire via `log_message()` [Service] Action | key=value | key=value à chaque étape du process   
 
+
+

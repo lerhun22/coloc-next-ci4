@@ -24,7 +24,10 @@ ADR-019 configuration metier centrale
 ADR-020 séparation tables brutes enrichies
 ADR-021 Runtime competitiion activation - Le Runtime deviendra ensuite : source unique de compétition active , point central slideshow , activeSession , UI runtime , debug production
 ADR-022 Runtime session architecture
-
+ADR-023 Runtime Image Flow : writable first,fallback legcy
+ADR-024 Runtime Orchestration  : runtime unique orchestration active séparation runtime/UI services autorisés
+ADR-025 Slideshow Runtime projection découplée / slideshow state / runtime slideshow flow
+ADR-026 INTERDIRE ROOTPATH et FCPATH hors bootstrap/config/path services
 
 
 
@@ -500,7 +503,15 @@ Cette logique :
 
 
 
-
+Je ferais exactement ceci maintenant :
+RuntimeImageService
+RuntimeImageController
+route /runtime/image/...
+Slideshow branché runtime image flow
+Runtime logs homogènes
+Runtime toolbar collector
+SlideshowRuntimeService
+ActiveCompetitionOrchestrator
 
 
 
